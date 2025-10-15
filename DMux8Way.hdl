@@ -1,0 +1,64 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/DMux8Way.hdl
+
+/**
+ * 8-way demultiplexor:
+ * {a, b, c, d, e, f, g, h} = {in, 0, 0, 0, 0, 0, 0, 0} if sel == 000
+ *                            {0, in, 0, 0, 0, 0, 0, 0} if sel == 001
+ *                            etc.
+ *                            {0, 0, 0, 0, 0, 0, 0, in} if sel == 111
+ */
+
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    Nand(a=sel[1], b=sel[1], out=notsel1);
+	Nand(a=sel[0], b=sel[0], out=notsel0);
+	Nand(a=sel[2], b=sel[2], out=notsel2);
+
+    //sel[2] = 0
+	Nand(a=in, b=notsel2, out=notLine0);
+	Nand(a=notLine0, b=notLine0, out=Line0);
+	//sel[2] = 1
+	Nand(a=in, b=sel[2], out=notLine1);
+	Nand(a=notLine1, b=notLine1, out=Line1);
+
+    //sel[2:1] = 00
+	Nand(a=notLine0, b=notsel2, out=notLine00);
+	Nand(a=notLine00, b=notLine00, out=Line00);
+	//sel[2:1] = 01
+	Nand(a=notLine0, b=sel[2], out=notLine01);
+	Nand(a=notLine01, b=notLine01, out=Line01);
+    //sel[2:1] = 10
+	Nand(a=Line1, b=notsel2, out=notLine10);
+	Nand(a=notLine10, b=notLine10, out=Line10);
+	//sel[2:1] = 11
+	Nand(a=Line1, b=sel[2], out=notLine11);
+	Nand(a=notLine11, b=notLine11, out=Line11);
+
+    //sel[0] для 00
+	Nand(a=Line00, b=notsel0, out=nota);
+	Nand(a=nota, b=nota, out=a);
+    Nand(a=Line00, b=sel[0], out=notb);
+	Nand(a=notb, b=notb, out=b);
+	//sel[0]  01
+	Nand(a=Line01, b=notsel0, out=notc);
+	Nand(a=notc, b=notc, out=c);
+    Nand(a=Line01, b=sel[0], out=notd);
+	Nand(a=notd, b=notd, out=d);
+    //sel[0] 10
+	Nand(a=Line10, b=notsel0, out=note);
+	Nand(a=note, b=note, out=e);
+    Nand(a=Line10, b=sel[0], out=notf);
+	Nand(a=notf, b=notf, out=f);
+	//sel[0]  11
+	Nand(a=Line11, b=notsel0, out=notg);
+	Nand(a=notg, b=notg, out=g);
+    Nand(a=Line11, b=sel[0], out=noth);
+	Nand(a=noth, b=noth, out=h);
+
+}
