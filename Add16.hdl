@@ -1,0 +1,290 @@
+/**
+ * Adds two 16-bit values.
+ * The most significant carry bit is ignored.
+ */
+
+CHIP Add16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    
+//1
+    Nand(a=a[0], b=b[0], out=AB0);
+    Nand(a=a[0], b=AB0, out=ABa0);
+    Nand(a=AB0, b=b[0], out=ABb0);
+	Nand(a=ABa0, b=ABb0, out=out[0]);
+	Nand(a=AB0, b=AB0, out=carry0);
+//2
+// Bit 1
+Nand(a=a[1], b=b[1], out=AB1);
+Nand(a=a[1], b=AB1, out=ABa1);
+Nand(a=AB1, b=b[1], out=ABb1);
+Nand(a=ABa1, b=ABb1, out=sumAB1);
+Nand(a=AB1, b=AB1, out=car11);
+
+Nand(a=sumAB1, b=carry0, out=ABC1);
+Nand(a=sumAB1, b=ABC1, out=d11);
+Nand(a=ABC1, b=carry0, out=d21);
+Nand(a=d11, b=d21, out=out[1]);
+Nand(a=ABC1, b=ABC1, out=car21);
+
+Nand(a=car11, b=car11, out=notcar11);
+Nand(a=car21, b=car21, out=notcar21);
+Nand(a=notcar11, b=notcar21, out=carry1);
+
+// Bit 2
+Nand(a=a[2], b=b[2], out=AB2);
+Nand(a=a[2], b=AB2, out=ABa2);
+Nand(a=AB2, b=b[2], out=ABb2);
+Nand(a=ABa2, b=ABb2, out=sumAB2);
+Nand(a=AB2, b=AB2, out=car12);
+
+Nand(a=sumAB2, b=carry1, out=ABC2);
+Nand(a=sumAB2, b=ABC2, out=d12);
+Nand(a=ABC2, b=carry1, out=d22);
+Nand(a=d12, b=d22, out=out[2]);
+Nand(a=ABC2, b=ABC2, out=car22);
+
+Nand(a=car12, b=car12, out=notcar12);
+Nand(a=car22, b=car22, out=notcar22);
+Nand(a=notcar12, b=notcar22, out=carry2);
+
+// Bit 3
+Nand(a=a[3], b=b[3], out=AB3);
+Nand(a=a[3], b=AB3, out=ABa3);
+Nand(a=AB3, b=b[3], out=ABb3);
+Nand(a=ABa3, b=ABb3, out=sumAB3);
+Nand(a=AB3, b=AB3, out=car13);
+
+Nand(a=sumAB3, b=carry2, out=ABC3);
+Nand(a=sumAB3, b=ABC3, out=d13);
+Nand(a=ABC3, b=carry2, out=d23);
+Nand(a=d13, b=d23, out=out[3]);
+Nand(a=ABC3, b=ABC3, out=car23);
+
+Nand(a=car13, b=car13, out=notcar13);
+Nand(a=car23, b=car23, out=notcar23);
+Nand(a=notcar13, b=notcar23, out=carry3);
+
+// Bit 4
+Nand(a=a[4], b=b[4], out=AB4);
+Nand(a=a[4], b=AB4, out=ABa4);
+Nand(a=AB4, b=b[4], out=ABb4);
+Nand(a=ABa4, b=ABb4, out=sumAB4);
+Nand(a=AB4, b=AB4, out=car14);
+
+Nand(a=sumAB4, b=carry3, out=ABC4);
+Nand(a=sumAB4, b=ABC4, out=d14);
+Nand(a=ABC4, b=carry3, out=d24);
+Nand(a=d14, b=d24, out=out[4]);
+Nand(a=ABC4, b=ABC4, out=car24);
+
+Nand(a=car14, b=car14, out=notcar14);
+Nand(a=car24, b=car24, out=notcar24);
+Nand(a=notcar14, b=notcar24, out=carry4);
+
+// Bit 5
+Nand(a=a[5], b=b[5], out=AB5);
+Nand(a=a[5], b=AB5, out=ABa5);
+Nand(a=AB5, b=b[5], out=ABb5);
+Nand(a=ABa5, b=ABb5, out=sumAB5);
+Nand(a=AB5, b=AB5, out=car15);
+
+Nand(a=sumAB5, b=carry4, out=ABC5);
+Nand(a=sumAB5, b=ABC5, out=d15);
+Nand(a=ABC5, b=carry4, out=d25);
+Nand(a=d15, b=d25, out=out[5]);
+Nand(a=ABC5, b=ABC5, out=car25);
+
+Nand(a=car15, b=car15, out=notcar15);
+Nand(a=car25, b=car25, out=notcar25);
+Nand(a=notcar15, b=notcar25, out=carry5);
+
+// Bit 6
+Nand(a=a[6], b=b[6], out=AB6);
+Nand(a=a[6], b=AB6, out=ABa6);
+Nand(a=AB6, b=b[6], out=ABb6);
+Nand(a=ABa6, b=ABb6, out=sumAB6);
+Nand(a=AB6, b=AB6, out=car16);
+
+Nand(a=sumAB6, b=carry5, out=ABC6);
+Nand(a=sumAB6, b=ABC6, out=d16);
+Nand(a=ABC6, b=carry5, out=d26);
+Nand(a=d16, b=d26, out=out[6]);
+Nand(a=ABC6, b=ABC6, out=car26);
+
+Nand(a=car16, b=car16, out=notcar16);
+Nand(a=car26, b=car26, out=notcar26);
+Nand(a=notcar16, b=notcar26, out=carry6);
+
+// Bit 7
+Nand(a=a[7], b=b[7], out=AB7);
+Nand(a=a[7], b=AB7, out=ABa7);
+Nand(a=AB7, b=b[7], out=ABb7);
+Nand(a=ABa7, b=ABb7, out=sumAB7);
+Nand(a=AB7, b=AB7, out=car17);
+
+Nand(a=sumAB7, b=carry6, out=ABC7);
+Nand(a=sumAB7, b=ABC7, out=d17);
+Nand(a=ABC7, b=carry6, out=d27);
+Nand(a=d17, b=d27, out=out[7]);
+Nand(a=ABC7, b=ABC7, out=car27);
+
+Nand(a=car17, b=car17, out=notcar17);
+Nand(a=car27, b=car27, out=notcar27);
+Nand(a=notcar17, b=notcar27, out=carry7);
+
+// Bit 8
+Nand(a=a[8], b=b[8], out=AB8);
+Nand(a=a[8], b=AB8, out=ABa8);
+Nand(a=AB8, b=b[8], out=ABb8);
+Nand(a=ABa8, b=ABb8, out=sumAB8);
+Nand(a=AB8, b=AB8, out=car18);
+
+Nand(a=sumAB8, b=carry7, out=ABC8);
+Nand(a=sumAB8, b=ABC8, out=d18);
+Nand(a=ABC8, b=carry7, out=d28);
+Nand(a=d18, b=d28, out=out[8]);
+Nand(a=ABC8, b=ABC8, out=car28);
+
+Nand(a=car18, b=car18, out=notcar18);
+Nand(a=car28, b=car28, out=notcar28);
+Nand(a=notcar18, b=notcar28, out=carry8);
+
+// Bit 9
+Nand(a=a[9], b=b[9], out=AB9);
+Nand(a=a[9], b=AB9, out=ABa9);
+Nand(a=AB9, b=b[9], out=ABb9);
+Nand(a=ABa9, b=ABb9, out=sumAB9);
+Nand(a=AB9, b=AB9, out=car19);
+
+Nand(a=sumAB9, b=carry8, out=ABC9);
+Nand(a=sumAB9, b=ABC9, out=d19);
+Nand(a=ABC9, b=carry8, out=d29);
+Nand(a=d19, b=d29, out=out[9]);
+Nand(a=ABC9, b=ABC9, out=car29);
+
+Nand(a=car19, b=car19, out=notcar19);
+Nand(a=car29, b=car29, out=notcar29);
+Nand(a=notcar19, b=notcar29, out=carry9);
+
+// Bit 10
+Nand(a=a[10], b=b[10], out=AB10);
+Nand(a=a[10], b=AB10, out=ABa10);
+Nand(a=AB10, b=b[10], out=ABb10);
+Nand(a=ABa10, b=ABb10, out=sumAB10);
+Nand(a=AB10, b=AB10, out=car110);
+
+Nand(a=sumAB10, b=carry9, out=ABC10);
+Nand(a=sumAB10, b=ABC10, out=d110);
+Nand(a=ABC10, b=carry9, out=d210);
+Nand(a=d110, b=d210, out=out[10]);
+Nand(a=ABC10, b=ABC10, out=car210);
+
+Nand(a=car110, b=car110, out=notcar110);
+Nand(a=car210, b=car210, out=notcar210);
+Nand(a=notcar110, b=notcar210, out=carry10);
+
+// Bit 11
+Nand(a=a[11], b=b[11], out=AB11);
+Nand(a=a[11], b=AB11, out=ABa11);
+Nand(a=AB11, b=b[11], out=ABb11);
+Nand(a=ABa11, b=ABb11, out=sumAB11);
+Nand(a=AB11, b=AB11, out=car111);
+
+Nand(a=sumAB11, b=carry10, out=ABC11);
+Nand(a=sumAB11, b=ABC11, out=d111);
+Nand(a=ABC11, b=carry10, out=d211);
+Nand(a=d111, b=d211, out=out[11]);
+Nand(a=ABC11, b=ABC11, out=car211);
+
+Nand(a=car111, b=car111, out=notcar111);
+Nand(a=car211, b=car211, out=notcar211);
+Nand(a=notcar111, b=notcar211, out=carry11);
+
+// Bit 12
+Nand(a=a[12], b=b[12], out=AB12);
+Nand(a=a[12], b=AB12, out=ABa12);
+Nand(a=AB12, b=b[12], out=ABb12);
+Nand(a=ABa12, b=ABb12, out=sumAB12);
+Nand(a=AB12, b=AB12, out=car112);
+
+Nand(a=sumAB12, b=carry11, out=ABC12);
+Nand(a=sumAB12, b=ABC12, out=d112);
+Nand(a=ABC12, b=carry11, out=d212);
+Nand(a=d112, b=d212, out=out[12]);
+Nand(a=ABC12, b=ABC12, out=car212);
+
+Nand(a=car112, b=car112, out=notcar112);
+Nand(a=car212, b=car212, out=notcar212);
+Nand(a=notcar112, b=notcar212, out=carry12);
+
+// Bit 13
+Nand(a=a[13], b=b[13], out=AB13);
+Nand(a=a[13], b=AB13, out=ABa13);
+Nand(a=AB13, b=b[13], out=ABb13);
+Nand(a=ABa13, b=ABb13, out=sumAB13);
+Nand(a=AB13, b=AB13, out=car113);
+
+Nand(a=sumAB13, b=carry12, out=ABC13);
+Nand(a=sumAB13, b=ABC13, out=d113);
+Nand(a=ABC13, b=carry12, out=d213);
+Nand(a=d113, b=d213, out=out[13]);
+Nand(a=ABC13, b=ABC13, out=car213);
+
+Nand(a=car113, b=car113, out=notcar113);
+Nand(a=car213, b=car213, out=notcar213);
+Nand(a=notcar113, b=notcar213, out=carry13);
+
+// Bit 14
+Nand(a=a[14], b=b[14], out=AB14);
+Nand(a=a[14], b=AB14, out=ABa14);
+Nand(a=AB14, b=b[14], out=ABb14);
+Nand(a=ABa14, b=ABb14, out=sumAB14);
+Nand(a=AB14, b=AB14, out=car114);
+
+Nand(a=sumAB14, b=carry13, out=ABC14);
+Nand(a=sumAB14, b=ABC14, out=d114);
+Nand(a=ABC14, b=carry13, out=d214);
+Nand(a=d114, b=d214, out=out[14]);
+Nand(a=ABC14, b=ABC14, out=car214);
+
+Nand(a=car114, b=car114, out=notcar114);
+Nand(a=car214, b=car214, out=notcar214);
+Nand(a=notcar114, b=notcar214, out=carry14);
+
+// Bit 15
+Nand(a=a[15], b=b[15], out=AB15);
+Nand(a=a[15], b=AB15, out=ABa15);
+Nand(a=AB15, b=b[15], out=ABb15);
+Nand(a=ABa15, b=ABb15, out=sumAB15);
+Nand(a=AB15, b=AB15, out=car115);
+
+Nand(a=sumAB15, b=carry14, out=ABC15);
+Nand(a=sumAB15, b=ABC15, out=d115);
+Nand(a=ABC15, b=carry14, out=d215);
+Nand(a=d115, b=d215, out=out[15]);
+Nand(a=ABC15, b=ABC15, out=car215);
+
+Nand(a=car115, b=car115, out=notcar115);
+Nand(a=car215, b=car215, out=notcar215);
+Nand(a=notcar115, b=notcar215, out=carry15);
+
+// Bit 16
+Nand(a=a[16], b=b[16], out=AB16);
+Nand(a=a[16], b=AB16, out=ABa16);
+Nand(a=AB16, b=b[16], out=ABb16);
+Nand(a=ABa16, b=ABb16, out=sumAB16);
+Nand(a=AB16, b=AB16, out=car116);
+
+Nand(a=sumAB16, b=carry15, out=ABC16);
+Nand(a=sumAB16, b=ABC16, out=d116);
+Nand(a=ABC16, b=carry15, out=d216);
+Nand(a=d116, b=d216, out=out[16]);
+Nand(a=ABC16, b=ABC16, out=car216);
+
+Nand(a=car116, b=car116, out=notcar116);
+Nand(a=car216, b=car216, out=notcar216);
+Nand(a=notcar116, b=notcar216, out=carry);
+}
