@@ -3,5 +3,31 @@ CHIP Memory20K {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Создаем 2-битный селектор из address[13..14]
+    // Но нам нужно обработать случай с Keyboard отдельно
+    
+    // Определяем области памяти
+    Not(in=address[14], out=isRAM16K);
+    And(a=address[14], b=address[13], out=isKeyboard);
+    Not(in=isKeyboard, out=notKeyboard);
+    And(a=address[14], b=notKeyboard, out=isRAM4KorScreen);
+    
+    // Сигналы загрузки
+    And(a=isRAM16K, b=load, out=ram16kLoad);
+    And(a=isRAM4KorScreen, b=load, out=ram4kScreenLoad);
+    
+    // RAM16K: 0x0000-0x3FFF
+    RAM16K(in=in, load=ram16kLoad, address=address[0..13], out=ram16kOut);
+    
+    // RAM4K и Screen используют общий load, но разные адреса
+    RAM4K(in=in, load=ram4kScreenLoad, address=address[0..11], out=ram4kOut);
+    Screen(in=in, load=ram4kScreenLoad, address=address[0..12], out=screenOut);
+    
+    // Keyboard: только чтение
+    Keyboard(out=kbOut);
+    
+    // Мультиплексирование с правильной логикой
+    Mux16(a=ram16kOut, b=highMemOut, sel=address[14], out=out);
+    Mux16(a=ram4kOut, b=screenKbOut, sel=address[13], out=highMemOut);
+    Mux16(a=screenOut, b=kbOut, sel=address[12], out=screenKbOut);
 }

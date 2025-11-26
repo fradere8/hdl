@@ -27,5 +27,15 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // RAM (0) или Screen/Keyboard (1)
+    Not(in=address[14], out=Not14bit); 
+	And(a=Not14bit, b=load, out=Mload); // Mload = load И address[14]=0 (RAM)
+	And(a=address[14], b=load, out=ScreenLoad); // Screenload = load И address[14]=1 (Screen)
+	
+	RAM16K(in=in, load=Mload, address=address[0..13], out=outMemory);
+	Screen(in=in, load=ScreenLoad, address=address[0..12], out=outScreen);
+	Keyboard(out=outKB);
+	
+	Mux16(a=outMemory, b=outSK, sel=address[14], out=out);  // Выбираем между RAM и (Screen/Keyboard)
+	Mux16(a=outScreen, b=outKB, sel=address[13], out=outSK);  // Выбираем между Screen и Keyboard
 }
