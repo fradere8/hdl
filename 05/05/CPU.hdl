@@ -60,16 +60,16 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // ========== ДЕКОДЕР ИНСТРУКЦИЙ ==========
-    // Извлекаем биты инструкции
+    // Декодер инструкций
     Or16(a=false, b=instruction, 
          out[15]=isC,        // Бит 15: 1=C-инструкция, 0=A-инструкция
-         out[12]=aBit,       // Бит 12: выбор второго операнда ALU
+         out[12]=aBit,       // Бит 12: выбор второго операнда ALU (А или М)
          out[11]=c1, out[10]=c2, out[9]=c3, out[8]=c4, out[7]=c5, out[6]=c6,
          out[5]=d1, out[4]=d2, out[3]=d3,
          out[2]=j1, out[1]=j2, out[0]=j3);
+    And(a=out[15], b= true, out= isC);
 
-    // ========== РЕГИСТР A ==========
+    // Регистр А
     // Определяем когда загружать регистр A:
     // - Для A-инструкций: всегда загружаем (isC=0)
     // - Для C-инструкций: когда d1=1 (записать результат в A)
@@ -81,13 +81,13 @@ CHIP CPU {
     Mux16(a=instruction, b=outAlu, sel=isC, out=inputA);
 
     // Регистр A с двумя выходами:
-    ARegister(in=inputA, load=loadA, out=ARegOut, out[0..14]=addressM);
+    ARegister(in=inputA, load=loadA, out=ARegOut, out[0..14]=addressM); // в памяти могут храниться только 15 битные адреса (максимум 32767 слов)
 
-    // ========== РЕГИСТР D ==========
+    // Регистр D
     And(a=isC, b=d2, out=loadD);       // Загружать D только для C-инстр. с d2=1
-    DRegister(in=outAlu, load=loadD, out=outD);
+    DRegister(in=outAlu, load=loadD, out=outD); // при а инструкции регистр д не меняется
 
-    // ========== ALU ==========
+    // ALU 
     // Выбираем второй операнд для ALU:
     Mux16(a=ARegOut, b=inM, sel=aBit, out=AorM);
     
@@ -96,23 +96,22 @@ CHIP CPU {
         zx=c1, nx=c2, zy=c3, ny=c4, f=c5, no=c6, 
         out=outAlu, out=outM, zr=zr, ng=ng);
 
-    // ========== ЛОГИКА ПЕРЕХОДОВ ==========
-    // Определяем условия прыжка:
-    Not(in=ng, out=notNg);
-    Not(in=zr, out=notZr);
-    And(a=notNg, b=notZr, out=gt);     // gt = (результат > 0)
+    // Условия для прыжков
+    Not(in=ng, out=notNg); // >= 0
+    Not(in=zr, out=notZr); // != 0
+    And(a=notNg, b=notZr, out=gt);     // GT = (результат > 0)
     
-    And(a=ng, b=j1, out=passLT);       // JLT: результат < 0
-    And(a=zr, b=j2, out=passEQ);       // JEQ: результат = 0
-    And(a=gt, b=j3, out=passGT);       // JGT: результат > 0
+    And(a=ng, b=j1, out=resLT);       // JLT: результат < 0
+    And(a=zr, b=j2, out=resEQ);       // JEQ: результат = 0
+    And(a=gt, b=j3, out=resGT);       // JGT: результат > 0
     
-    Or(a=passLT, b=passEQ, out=temp);
-    Or(a=temp, b=passGT, out=pass);
+    Or(a=resLT, b=resEQ, out=temp);
+    Or(a=temp, b=resGT, out=pass); 
     And(a=isC, b=pass, out=PCload);    // Прыжок только для C-инструкций
     
-    // Программный счетчик:
+    // Программный счетчик
     PC(in=ARegOut, load=PCload, inc=true, reset=reset, out[0..14]=pc);
 
-    // ========== ЗАПИСЬ В ПАМЯТЬ ==========
+    // Записываем в память
     And(a=isC, b=d3, out=writeM);      // Запись только для C-инстр. с d3=1
 }
